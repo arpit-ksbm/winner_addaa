@@ -4,12 +4,12 @@ const express = require('express');
 const session = require('express-session');
 const cookieParser = require('cookie-parser');
 
-const port =  3000;
+const port =  5001;
 const dbConnect = require('./src/config/dbConnect')
 const path = require('path')
 const app = express()
 
-// const Routes = require("./src/routes/index")
+const Routes = require("./src/routes/index")
 
 
 // const { Error } = require('./src/utils/helper')
@@ -41,7 +41,7 @@ app.use(cookieParser());
 //   next();
 // });
 
-// app.use('/api', Routes)
+app.use('/api', Routes)
 
 app.listen(port, () => {
   dbConnect()
