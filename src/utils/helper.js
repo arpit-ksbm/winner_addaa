@@ -29,6 +29,11 @@ module.exports = {
         return "1234";
     },
 
+    validatePhoneNumber: (mobile_no) => {
+        const mobileNumberPattern = /^\d{10}$/;
+        return mobileNumberPattern.test(mobile_no);
+    },
+
     sendMail: (maildata) => {
         // {
         //   name: result.first_name || "",
