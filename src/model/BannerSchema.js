@@ -5,19 +5,19 @@ const bannerDetailsSchema = new mongoose.Schema(
   {
     image1: {
       type: String,
-      default: null,  // Image can be null
+    //   default: null,  // Image can be null
     },
     image2: {
       type: String,
-      required: true,  // image2 is required
+    //   required: true,  // image2 is required
     },
     image3: {
       type: String,
-      required: true,  // image3 is required
+    //   required: true,  // image3 is required
     },
     image4: {
       type: String,
-      required: true,  // image4 is required
+    //   required: true,  // image4 is required
     },
   },
   {
