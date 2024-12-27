@@ -1,6 +1,12 @@
+const { validations, Response, Error, ErrorCatch } = require('../utils/helper');
 const User = require('../model/userModel/UserSchema');
 const PlayerDetail = require('../model/playerModel/PlayerDetailsSchema');
-const { validations } = require('../utils/helper');
+const VersionControl = require('../model/VersionControlSchema');
+const BoatControl = require('../model/BoatControlSchema');
+const BonusWalletTransactionDetail = require('../model/walletModel/bonusWalletDetails');
+const WalletDetail = require('../model/walletModel/walletDetailSchema');
+const PromoWalletDetail = require('../model/walletModel/promoWalletDetails');
+const BonusWalletDetail = require('../model/walletModel/bonusWalletDetails');
 
 class PlayerController {
     static async createPlayer(req, res) {
@@ -105,9 +111,60 @@ class PlayerController {
         }
     }
       
-    static async playerDeatils(req, res) {
-        
+    static async PlayerList(req, res) {
+        try {
+          const players = await PlayerDetail.find();
+          
+          return Response(res, true, 200, 'Players fetched successfully', players);
+        } catch (error) {
+          console.error('Error fetching players:', error);
+          return ErrorCatch(res, error);
+        }
     }
+
+    static async getPlayerById(req, res) {
+      try {
+        const { player_id } = req.params;
+    
+        // Fetch player details
+        const player = await PlayerDetail.findById(player_id);
+        if (!player) {
+          return res.status(404).json({ status: 'Error', message: 'Player not found' });
+        }
+    
+        // Fetch related data
+        const user = await User.findById(player.user_id);
+        const mobileNumber = user ? user.mobile_no : null;
+    
+        const app = await VersionControl.findOne();
+        const bot = await BoatControl.findOne();
+        const coupon = await BonusWalletTransactionDetail.findOne({ player_id });
+        const wallet = await WalletDetail.findOne({ player_id });
+        const promoWallet = await PromoWalletDetail.findOne({ player_id });
+        const bonusWallet = await BonusWalletDetail.findOne({ player_id });
+    
+        // Prepare the response
+        return res.status(200).json({
+          status: 'Success',
+          message: 'Player details fetched successfully',
+          data: {
+            player,
+            mobile: mobileNumber,
+            wallet,
+            bonus_wallet: bonusWallet,
+            promo_wallet: promoWallet,
+            coupon,
+            app,
+            bot,
+          },
+        });
+      } catch (error) {
+        console.error('Error fetching player details:', error);
+        return res.status(500).json({ status: 'Error', message: 'Internal server error' });
+      }
+    }
+    
+          
 }
 
 module.exports = PlayerController;

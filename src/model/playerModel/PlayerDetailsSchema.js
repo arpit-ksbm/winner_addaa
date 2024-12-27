@@ -77,16 +77,16 @@ const PlayerDetailsSchema = new mongoose.Schema({
   point_updated_at: {
     type: String
   },
-//   current_month_point: {
-//     type: mongoose.Schema.Types.Decimal128,
-//     required: true,
-//     default: 0.0,
-//   },
-//   last_month_point: {
-//     type: mongoose.Schema.Types.Decimal128,
-//     required: true,
-//     default: 0.0,
-//   },
+  current_month_point: {
+    type: String,
+    // required: true,
+    default: 0.0,
+  },
+  last_month_point: {
+    type: String,
+    // required: true,
+    default: 0.0,
+  },
   created_at: {
     type: Date,
     default: null,

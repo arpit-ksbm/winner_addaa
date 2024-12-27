@@ -88,14 +88,14 @@ module.exports = {
         return decrypted_id;
     },
 
-    Response: (res, success = true, status = 200, message = "", otp = "") => {
+    Response: (res, success = true, status = 200, message = "", data = [], extra = []) => {
         return res.status(status).json({
             success: success,
             message: message,
-            otp: otp,
+            data: data,
+            ...extra
         });
     },
-    
 
     Error: (res, result = -1, status = 500, msg = "", errors = []) => {
         res.status(status).send({ result: result, msg: msg });
