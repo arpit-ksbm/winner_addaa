@@ -4,8 +4,8 @@ const Schema = mongoose.Schema;
 const WalletDetailSchema = new Schema(
   {
     player_id: {
-      type: mongoose.Schema.Types.ObjectId, // Assuming `player_id` references another collection (e.g., Player)
-      ref: 'Player', // Replace 'Player' with the actual model name of the Player collection
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Player',
       required: true,
     },
     wallet_ref_number: {

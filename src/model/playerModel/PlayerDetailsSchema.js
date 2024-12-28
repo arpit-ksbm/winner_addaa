@@ -56,6 +56,10 @@ const PlayerDetailsSchema = new mongoose.Schema({
     type: String,
     default: null,
   },
+  profile_url_image: {
+    type: String,
+    default: '',
+  },
   profile_image: {
     type: String,
     default: '',

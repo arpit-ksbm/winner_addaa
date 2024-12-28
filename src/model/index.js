@@ -10,6 +10,11 @@ const UserWalletDetail = require('./walletModel/userWalletSchema');
 const Coupon = require('./CouponSchema');
 const TournamentModel = require('./TournamentSchema');
 const BannerModel = require('./BannerSchema');
+const Category = require('./CategoryModel');
+const NotificationDetail = require('./NotificationSchema');
+const PlayerNotification = require('./playerModel/PlayerNotification');
+const TeenPattiGame = require('./TeenPattiGameSchema');
+const WalletTransactionDetail = require('./walletModel/walletTranscationDetails');
 
 module.exports = {
     UserModel,
@@ -18,10 +23,15 @@ module.exports = {
     BoatControl,
     BonusWalletTransactionDetail,
     WalletDetail,
+    WalletTransactionDetail,
     PromoWalletDetail,
     BonusWalletDetail,
     UserWalletDetail,
     Coupon,
     TournamentModel,
-    BannerModel
+    BannerModel,
+    Category,
+    NotificationDetail,
+    PlayerNotification,
+    TeenPattiGame
 }
