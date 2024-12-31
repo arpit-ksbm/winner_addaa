@@ -6,21 +6,21 @@ const WalletTransactionDetailSchema = new Schema(
     player_id: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Player',
-      required: true,
+      // required: true,
     },
     wallet_id: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'WalletDetail',
-      required: true,
+      // required: true,
     },
     amount: {
       type: Number,
       default: 0.00,
-      required: true,
+      // required: true,
     },
     transaction_id: {
       type: String,
-      required: true,
+      // required: true,
     },
     trans_date: {
       type: Date,
@@ -28,7 +28,7 @@ const WalletTransactionDetailSchema = new Schema(
     },
     final_wallet_balance: {
       type: Number,
-      required: true,
+      // required: true,
     },
     type: {
       type: String,
@@ -45,7 +45,7 @@ const WalletTransactionDetailSchema = new Schema(
     notes: {
       type: String,
       default: 'Win Play Card',
-      required: true,
+      // required: true,
     },
     razorpay_order_id: {
       type: String,
@@ -61,14 +61,14 @@ const WalletTransactionDetailSchema = new Schema(
       default: null,
     },
     game_type: {
-      type: Number,
-      default: 1, // 1 = "ludo", 2 = "wheel"
-      required: true,
+      type: String,
+      enum: ['1', '2'], // Assuming '1' = Ludo, '2' = Wheel, can add more game types if necessary
+      default: '1',
     },
     game_id: {
       type: Number,
       default: 0,
-      required: true,
+      // required: true,
     },
   },
   {

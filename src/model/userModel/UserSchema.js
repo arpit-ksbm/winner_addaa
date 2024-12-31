@@ -86,6 +86,8 @@ const UserSchema = new mongoose.Schema({
   },
   game_type: {
     type: String,
+    enum: ['1', '2'], // Assuming '1' = Ludo, '2' = Wheel, can add more game types if necessary
+    default: '1',
   },
   country_code: {
     type: Number,

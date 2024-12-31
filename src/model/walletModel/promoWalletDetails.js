@@ -4,35 +4,35 @@ const PromoWalletDetailSchema = new mongoose.Schema(
   {
     player_id: {
       type: mongoose.Schema.Types.ObjectId,
-      required: true,
+      // required: true,
     },
     bonus_wallet_ref_number: {
       type: String,
-      required: true,
+      // required: true,
       maxlength: 200,
     },
     total_amt_added: {
       type: Number,
-      required: true,
+      // required: true,
       min: 0,
     },
     total_amt_used: {
       type: Number,
-      required: true,
+      // required: true,
       min: 0,
     },
     current_amount: {
       type: Number,
-      required: true,
+      // required: true,
       min: 0,
     },
     last_used_date: {
       type: Date,
-      required: true,
+      // required: true,
     },
     last_added_date: {
       type: Date,
-      required: true,
+      // required: true,
     },
   },
   {

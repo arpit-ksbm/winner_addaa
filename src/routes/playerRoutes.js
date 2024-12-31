@@ -12,5 +12,14 @@ playerRouter.post('/profile-image/get', PlayerController.getPlayerImage);
 playerRouter.post('/profile-image/get', PlayerController.getPlayerImage);
 playerRouter.post('/updateName', PlayerController.updatePlayerName);
 playerRouter.get('/notification/list', authenticateToken, PlayerController.listNotification);
+playerRouter.get('/latest-winner', PlayerController.latestWinnerList);
+playerRouter.get('/coupon/list', PlayerController.couponList);
+playerRouter.post('/coupon/check', PlayerController.couponCheck)
+playerRouter.post('/bonus/claim', PlayerController.bonusClaim)
+playerRouter.post('/spin/claim', PlayerController.spinClaim);
+playerRouter.post('/spin/play', PlayerController.spinClaim);
+playerRouter.post('/last-active', PlayerController.lastActive);
+playerRouter.get('/leader-board-current-month', PlayerController.leaderBoardCurrentMonth);
+playerRouter.get('/leader-board-last-month', PlayerController.leaderBoardLastMonth);
 
 module.exports = playerRouter;

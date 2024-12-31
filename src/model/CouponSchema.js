@@ -4,32 +4,32 @@ const CouponSchema = new mongoose.Schema(
   {
     player_id: {
       type: mongoose.Schema.Types.ObjectId, // Assuming `player_id` references a player document
-      required: true,
+      // required: true,
       ref: 'PlayerDetail', // Optional: Reference to the player collection
     },
     coupon_bonus: {
       type: Number,
-      required: true,
+      // required: true,
       default: 0, // Maps to int(1) DEFAULT 0
     },
     upi_money: {
       type: Number,
-      required: true,
+      // required: true,
       default: 0, // Maps to int(1) DEFAULT 0
     },
     offer: {
       type: Number,
-      required: true,
+      // required: true,
       default: 0, // Maps to int(1) DEFAULT 0
     },
     cool_twenty: {
       type: Number,
-      required: true,
+      // required: true,
       default: 0, // Maps to int(1) DEFAULT 0
     },
     win_twenty: {
       type: Number,
-      required: true,
+      // required: true,
       default: 0, // Maps to int(1) DEFAULT 0
     },
     upi_offer_lastused: {

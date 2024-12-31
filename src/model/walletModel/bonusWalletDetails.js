@@ -10,21 +10,21 @@ const BonusWalletDetailSchema = new Schema(
     },
     bonus_wallet_ref_number: {
       type: String,
-      required: true,
+      // required: true,
     },
     total_amt_added: {
       type: Number,
-      required: true,
+      // required: true,
       default: 0.0,
     },
     total_amt_used: {
       type: Number,
-      required: true,
+      // required: true,
       default: 0.0,
     },
     current_amount: {
       type: Number,
-      required: true,
+      // required: true,
       default: 0.0,
     },
     last_used_date: {

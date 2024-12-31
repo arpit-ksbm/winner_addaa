@@ -1,5 +1,6 @@
-const { TournamentModel } = require('../model/index');
+const { TournamentModel, WalletDetail, TournamentRegistration, WalletTransactionDetail, PromoWalletDetail, BonusWalletDetail } = require('../model/index');
 const { validations } = require('../utils/helper');
+const moment = require('moment');
 
 class TournamentController {
     // Method to create a new tournament
@@ -60,6 +61,69 @@ class TournamentController {
         }
     }
 
+    static async editTournament(req, res) {
+        try {
+            const { tournamentId } = req.params;
+            const updateData = req.body; // Assuming the updated data comes from the request body
+    
+            console.log('tournamentId', tournamentId);
+            console.log('updateData', updateData);  // Log the update data for debugging
+    
+            if (!tournamentId) {
+                return res.status(422).json({ message: 'Tournament ID is required' });
+            }
+    
+            // Find the tournament by ID and update it with the new data
+            const updatedTournament = await TournamentModel.findByIdAndUpdate(
+                tournamentId, 
+                updateData, 
+                { new: true } // `new: true` ensures the updated document is returned
+            );
+    
+            if (!updatedTournament) {
+                return res.status(404).json({ message: 'Tournament not found' });
+            }
+    
+            // Send back the updated tournament data along with the action
+            const action = "1"; // Assuming action is predefined, modify if needed
+            return res.status(200).json({
+                tournament: updatedTournament,
+                action
+            });
+    
+        } catch (error) {
+            console.error(error);
+            return res.status(500).json({ message: 'Internal Server Error' });
+        }
+    };
+
+    static async deleteTournament(req, res) {
+        try {
+            const { tournamentId } = req.params;
+    
+            if (!tournamentId) {
+                return res.status(422).json({ message: 'Tournament ID is required' });
+            }
+    
+            // Find the tournament by ID and delete it
+            const deletedTournament = await TournamentModel.findByIdAndDelete(tournamentId);
+    
+            if (!deletedTournament) {
+                return res.status(404).json({ message: 'Tournament not found' });
+            }
+    
+            // Send back the deleted tournament data
+            return res.status(200).json({
+                message: 'Tournament deleted successfully',
+                tournament: deletedTournament
+            });
+    
+        } catch (error) {
+            console.error(error);
+            return res.status(500).json({ message: 'Internal Server Error' });
+        }
+    }
+
     static async tournamentRegistration(req, res) {
         try {
             // Input validation
@@ -83,7 +147,7 @@ class TournamentController {
                     walletDetail.last_load_date = todayTime;
                     await walletDetail.save();
 
-                    const transactionDetail = new WalletTransactionDetails({
+                    const transactionDetail = new WalletTransactionDetail({
                         player_id,
                         wallet_id: walletDetail._id,
                         type: 'credit',
@@ -104,7 +168,7 @@ class TournamentController {
                         promoWallet.last_added_date = todayTime;
                         await promoWallet.save();
 
-                        const promoTransaction = new WalletTransactionDetails({
+                        const promoTransaction = new WalletTransactionDetail({
                             player_id,
                             wallet_id: promoWallet._id,
                             amount: promo_amount,
@@ -125,7 +189,7 @@ class TournamentController {
                         bonusWallet.last_added_date = todayTime;
                         await bonusWallet.save();
 
-                        const bonusTransaction = new WalletTransactionDetails({
+                        const bonusTransaction = new WalletTransactionDetail({
                             player_id,
                             wallet_id: bonusWallet._id,
                             amount: bonus_amount,
@@ -197,7 +261,7 @@ class TournamentController {
                     walletDetail.last_withdraw_date = todayTime;
                     await walletDetail.save();
 
-                    const transactionDetail = new WalletTransactionDetails({
+                    const transactionDetail = new WalletTransactionDetail({
                         player_id,
                         wallet_id: walletDetail._id,
                         type: 'debit',
@@ -218,7 +282,7 @@ class TournamentController {
                         promoWallet.last_added_date = todayTime;
                         await promoWallet.save();
 
-                        const promoTransaction = new WalletTransactionDetails({
+                        const promoTransaction = new WalletTransactionDetail({
                             player_id,
                             wallet_id: promoWallet._id,
                             amount: promo_amount,
@@ -239,7 +303,7 @@ class TournamentController {
                         bonusWallet.last_added_date = todayTime;
                         await bonusWallet.save();
 
-                        const bonusTransaction = new WalletTransactionDetails({
+                        const bonusTransaction = new WalletTransactionDetail({
                             player_id,
                             wallet_id: bonusWallet._id,
                             amount: bonus_amount,
@@ -264,69 +328,6 @@ class TournamentController {
             return res.status(500).json({ message: 'Internal Server Error' });
         }
     };
-
-    static async editTournament(req, res) {
-        try {
-            const { tournamentId } = req.params;
-            const updateData = req.body; // Assuming the updated data comes from the request body
-    
-            console.log('tournamentId', tournamentId);
-            console.log('updateData', updateData);  // Log the update data for debugging
-    
-            if (!tournamentId) {
-                return res.status(422).json({ message: 'Tournament ID is required' });
-            }
-    
-            // Find the tournament by ID and update it with the new data
-            const updatedTournament = await TournamentModel.findByIdAndUpdate(
-                tournamentId, 
-                updateData, 
-                { new: true } // `new: true` ensures the updated document is returned
-            );
-    
-            if (!updatedTournament) {
-                return res.status(404).json({ message: 'Tournament not found' });
-            }
-    
-            // Send back the updated tournament data along with the action
-            const action = "1"; // Assuming action is predefined, modify if needed
-            return res.status(200).json({
-                tournament: updatedTournament,
-                action
-            });
-    
-        } catch (error) {
-            console.error(error);
-            return res.status(500).json({ message: 'Internal Server Error' });
-        }
-    };
-
-    static async deleteTournament(req, res) {
-        try {
-            const { tournamentId } = req.params;
-    
-            if (!tournamentId) {
-                return res.status(422).json({ message: 'Tournament ID is required' });
-            }
-    
-            // Find the tournament by ID and delete it
-            const deletedTournament = await TournamentModel.findByIdAndDelete(tournamentId);
-    
-            if (!deletedTournament) {
-                return res.status(404).json({ message: 'Tournament not found' });
-            }
-    
-            // Send back the deleted tournament data
-            return res.status(200).json({
-                message: 'Tournament deleted successfully',
-                tournament: deletedTournament
-            });
-    
-        } catch (error) {
-            console.error(error);
-            return res.status(500).json({ message: 'Internal Server Error' });
-        }
-    }
 
 }
 
