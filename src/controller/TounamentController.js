@@ -329,6 +329,436 @@ class TournamentController {
         }
     };
 
+    static async tournamentRegistrationList (req, res) {
+        try {
+            // Validate the input
+            const { player_id } = req.body;
+    
+            if (!player_id) {
+                return res.status(422).json({
+                    errors: ['The player_id field is required'],
+                });
+            }
+    
+            // Get today's date
+            const todayDate = moment().format('YYYY-MM-DD');
+    
+            // Fetch tournament registrations for the player for today's date
+            const tournaments = await TournamentRegistration.find({
+                player_id,
+                register_date: todayDate,
+            });
+    
+            // Send response
+            return res.status(200).json({
+                status: 'Success',
+                message: 'Tournament Registered',
+                data: tournaments,
+            });
+        } catch (error) {
+            console.error('Error fetching tournament registrations:', error);
+            return res.status(500).json({
+                status: 'Error',
+                message: 'Internal server error',
+                error: error.message,
+            });
+        }
+    };
+
+    static async tournamentRegistrationCount (req, res) {
+        try {
+            // Validate the input
+            const { tournament_id } = req.body;
+    
+            if (!tournament_id) {
+                return res.status(422).json({
+                    errors: ['The tournament_id field is required'],
+                });
+            }
+    
+            // Count the number of tournament registrations for the given tournament_id
+            const tournamentCount = await TournamentRegistration.countDocuments({ tournament_id });
+    
+            // Send response
+            return res.status(200).json({
+                status: 'Success',
+                message: 'Tournament Registered Count',
+                data: tournamentCount,
+            });
+        } catch (error) {
+            console.error('Error fetching tournament registration count:', error);
+            return res.status(500).json({
+                status: 'Error',
+                message: 'Internal server error',
+                error: error.message,
+            });
+        }
+    };
+
+    static async tournamentRegistrationOverallList (req, res) {
+        try {
+            // Get the current date
+            const todayDate = moment().format('YYYY-MM-DD');
+    
+            // Fetch all tournament registrations for the current date
+            const tournaments = await TournamentRegistration.find({ register_date: todayDate });
+    
+            // Send response
+            return res.status(200).json({
+                status: 'Success',
+                message: 'Tournament Registered List',
+                data: tournaments,
+            });
+        } catch (error) {
+            console.error('Error fetching tournament registration list:', error);
+            return res.status(500).json({
+                status: 'Error',
+                message: 'Internal server error',
+                error: error.message,
+            });
+        }
+    };
+
+    static async tournamentUpdate(req, res) {
+        try {
+            const { tournament_id, player_id } = req.body;
+            if (!tournament_id || !player_id) {
+                return res.status(422).json({
+                    errors: ['The tournament_id and player_id fields are required'],
+                });
+            }   
+            const todayTime = moment();
+    
+            // Find the tournament by ID
+            const tournament = await TournamentModel.findById(tournament_id);
+            if (!tournament) {
+                return res.status(404).json({
+                    status: false,
+                    message: 'Not Found Data Tournament',
+                });
+            }
+    
+            // Calculate start and end times
+            const startTime = moment(`${todayTime.format('YYYY-MM-DD')} ${tournament.start_time}`, 'YYYY-MM-DD HH:mm:ss');
+            const endTime = startTime.clone().add(tournament.tournament_interval, 'minutes');
+    
+            // Calculate remaining time
+            const totalSeconds = Math.max(0, endTime.diff(todayTime, 'seconds'));
+    
+            // Get registration counts
+            const tournamentCount = await TournamentRegistration.countDocuments({ tournament_id });
+            const registeredCheckCount = await TournamentRegistration.countDocuments({ player_id, tournament_id });
+    
+            const tournamentRegistration = await TournamentRegistration.findOne({ player_id, tournament_id });
+    
+            let operator = '';
+            let playMoney = '';
+            let bonusMoney = '';
+    
+            if (tournamentRegistration) {
+                operator = tournamentRegistration.type || '';
+                playMoney = tournamentRegistration.play_money || '';
+                bonusMoney = tournamentRegistration.bonus_money || '';
+            }
+    
+            // Convert ID to string for consistency
+            tournament.id = tournament._id.toString();
+    
+            // Response
+            const response = {
+                status: 'Success',
+                data: tournament,
+                remainingtime: totalSeconds,
+                count: tournamentCount,
+                registered: registeredCheckCount,
+                operator: operator,
+                playmoney: playMoney,
+                bonusmoney: bonusMoney,
+            };
+    
+            return res.status(200).json(response);
+        } catch (error) {
+            console.error('Error in tournamentUpdate:', error);
+            return res.status(500).json({
+                status: false,
+                message: 'Internal server error',
+                error: error.message,
+            });
+        }
+    }
+
+    static async tournament15Min (req, res) {
+        try {
+            const todayTime = moment();
+    
+            // Fetch the tournament with a 3-minute interval
+            const tournament3Min = await TournamentModel.findOne({ tournament_interval: '3' });
+            if (!tournament3Min) {
+                return res.status(404).json({
+                    status: false,
+                    message: 'Tournament with 3-minute interval not found',
+                });
+            }
+    
+            // Calculate the remaining duration for the 3-minute interval tournament
+            const start3 = moment(`${todayTime.format('YYYY-MM-DD')} ${tournament3Min.start_time}`, 'YYYY-MM-DD HH:mm:ss');
+            const end3 = start3.clone().add(tournament3Min.tournament_interval, 'minutes');
+            const totalDuration3 = Math.max(0, end3.diff(todayTime, 'seconds'));
+    
+            // Fetch the tournament with a 5-minute interval
+            const tournament5Min = await TournamentModel.findOne({ tournament_interval: '5' });
+            if (!tournament5Min) {
+                return res.status(404).json({
+                    status: false,
+                    message: 'Tournament with 5-minute interval not found',
+                });
+            }
+    
+            // Calculate the remaining duration for the 5-minute interval tournament
+            const start5 = moment(`${todayTime.format('YYYY-MM-DD')} ${tournament5Min.start_time}`, 'YYYY-MM-DD HH:mm:ss');
+            const end5 = start5.clone().add(tournament5Min.tournament_interval, 'minutes');
+            const totalDuration5 = Math.max(0, end5.diff(todayTime, 'seconds'));
+    
+            // Response
+            const response = {
+                status: 'Success',
+                '3min': totalDuration3,
+                '5min': totalDuration5,
+            };
+    
+            return res.status(200).json(response);
+        } catch (error) {
+            console.error('Error in tournament15Min:', error);
+            return res.status(500).json({
+                status: false,
+                message: 'Internal server error',
+                error: error.message,
+            });
+        }
+    };
+
+    static async tournament30Min (req, res) {
+        try {
+            const todayTime = moment();
+            const start = todayTime.format('YYYY-MM-DD HH:mm:ss');
+            const end = moment(start, 'YYYY-MM-DD HH:mm:ss').add(1, 'minutes');
+            const endTime = moment(start, 'YYYY-MM-DD HH:mm:ss').add(30, 'minutes');
+    
+            // Update the tournament with a 30-minute interval
+            await TournamentModel.updateMany(
+                { tournament_interval: 30 },
+                {
+                    $set: {
+                        end_time: endTime.toISOString(),
+                        start_time: end.toISOString(),
+                    },
+                }
+            );
+    
+            // Retrieve updated tournaments with a 30-minute interval
+            const tournaments = await TournamentModel.find({ tournament_interval: 30 });
+    
+            // Delete all registrations for these tournaments
+            for (const tournament of tournaments) {
+                await TournamentRegistration.deleteMany({ tournament_id: tournament._id });
+            }
+    
+            // Response
+            const response = {
+                status: 'Success',
+                message: 'Tournament Completed',
+                data: tournaments,
+            };
+    
+            return res.status(200).json(response);
+        } catch (error) {
+            console.error('Error in tournament30Min:', error);
+            return res.status(500).json({
+                status: false,
+                message: 'Internal server error',
+                error: error.message,
+            });
+        }
+    };
+    
+    static async tournament5Min (req, res) {
+        try {
+            const todayTime = moment();
+            const start = todayTime.format('YYYY-MM-DD HH:mm:ss');
+            const end = moment(start, 'YYYY-MM-DD HH:mm:ss');
+            const endTime = moment(start, 'YYYY-MM-DD HH:mm:ss').add(5, 'minutes');
+    
+            // Update the tournament with a 5-minute interval
+            await TournamentModel.updateMany(
+                { tournament_interval: 5 },
+                {
+                    $set: {
+                        end_time: endTime.toISOString(),
+                        start_time: end.toISOString(),
+                    },
+                }
+            );
+    
+            // Retrieve updated tournaments with a 5-minute interval
+            const tournaments = await TournamentModel.find({ tournament_interval: 5 });
+    
+            // Delete all registrations for these tournaments
+            for (const tournament of tournaments) {
+                await TournamentRegistration.deleteMany({ tournament_id: tournament._id });
+            }
+    
+            // Response
+            const response = {
+                status: 'Success',
+                message: 'Tournament Completed',
+                data: tournaments,
+            };
+    
+            return res.status(200).json(response);
+        } catch (error) {
+            console.error('Error in tournament5Min:', error);
+            return res.status(500).json({
+                status: false,
+                message: 'Internal server error',
+                error: error.message,
+            });
+        }
+    };
+    
+    static async tournament3Min (req, res) {
+        try {
+            const todayTime = moment();
+            const start = todayTime.format('YYYY-MM-DD HH:mm:ss');
+            const end = moment(start, 'YYYY-MM-DD HH:mm:ss');
+            const endTime = moment(start, 'YYYY-MM-DD HH:mm:ss').add(3, 'minutes');
+    
+            // Update the tournament with a 3-minute interval
+            await TournamentModel.updateMany(
+                { tournament_interval: 3 },
+                {
+                    $set: {
+                        end_time: endTime.toISOString(),
+                        start_time: end.toISOString(),
+                    },
+                }
+            );
+    
+            // Retrieve updated tournaments with a 3-minute interval
+            const tournaments = await TournamentModel.find({ tournament_interval: 3 });
+    
+            // Delete all registrations for these tournaments
+            for (const tournament of tournaments) {
+                await TournamentRegistration.deleteMany({ tournament_id: tournament._id });
+            }
+    
+            // Response
+            const response = {
+                status: 'Success',
+                message: 'Tournament Completed',
+                data: tournaments,
+            };
+    
+            return res.status(200).json(response);
+        } catch (error) {
+            console.error('Error in tournament3Min:', error);
+            return res.status(500).json({
+                status: false,
+                message: 'Internal server error',
+                error: error.message,
+            });
+        }
+    };
+    
+    static async tournament8Min (req, res) {
+        try {
+            const todayTime = moment();
+            const start = todayTime.format('YYYY-MM-DD HH:mm:ss');
+            const end = moment(start, 'YYYY-MM-DD HH:mm:ss');
+            const endTime = moment(start, 'YYYY-MM-DD HH:mm:ss').add(8, 'minutes');
+    
+            // Update the tournament with an 8-minute interval
+            await TournamentModel.updateMany(
+                { tournament_interval: 8 },
+                {
+                    $set: {
+                        end_time: endTime.toISOString(),
+                        start_time: end.toISOString(),
+                    },
+                }
+            );
+    
+            // Retrieve updated tournaments with an 8-minute interval
+            const tournaments = await TournamentModel.find({ tournament_interval: 8 });
+    
+            // Delete all registrations for these tournaments
+            for (const tournament of tournaments) {
+                await TournamentRegistration.deleteMany({ tournament_id: tournament._id });
+            }
+    
+            // Response
+            const response = {
+                status: 'Success',
+                message: 'Tournament Completed',
+                data: tournaments,
+            };
+    
+            return res.status(200).json(response);
+        } catch (error) {
+            console.error('Error in tournament8Min:', error);
+            return res.status(500).json({
+                status: false,
+                message: 'Internal server error',
+                error: error.message,
+            });
+        }
+    };
+
+    static async tournament1Min (req, res) {
+        try {
+            const todayTime = moment();
+            const start = todayTime.format('YYYY-MM-DD HH:mm:ss');
+            const end = moment(start, 'YYYY-MM-DD HH:mm:ss');
+            const endTime = moment(start, 'YYYY-MM-DD HH:mm:ss').add(1, 'minute');
+    
+            // Update tournaments with a 1-minute interval
+            await TournamentModel.updateMany(
+                { tournament_interval: 1 },
+                {
+                    $set: {
+                        end_time: endTime.toISOString(),
+                        start_time: end.toISOString(),
+                    },
+                }
+            );
+    
+            // Retrieve updated tournaments with a 1-minute interval
+            const tournaments = await TournamentModel.find({ tournament_interval: 1 });
+    
+            // Delete all registrations for these tournaments
+            for (const tournament of tournaments) {
+                await TournamentRegistration.deleteMany({ tournament_id: tournament._id });
+            }
+    
+            // Response
+            const response = {
+                status: 'Success',
+                message: 'Tournament Completed',
+                data: tournaments,
+            };
+    
+            return res.status(200).json(response);
+        } catch (error) {
+            console.error('Error in tournament1Min:', error);
+            return res.status(500).json({
+                status: false,
+                message: 'Internal server error',
+                error: error.message,
+            });
+        }
+    };
+    
+    
+
 }
 
 module.exports = TournamentController;
